@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 // Post model
 const Category = require('../models/Category');
 
-router.post('/all',(req, res)=>{
+const checkAuth = require('../middleware/check-auth');
+
+router.post('/all', checkAuth, (req, res)=>{
     Category.find()
     .exec()
     .then(results=>{

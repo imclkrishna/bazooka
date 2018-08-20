@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+const checkAuth = require('../middleware/check-auth');
+
 
 // Post model
 const Creator = require('../models/Creator');
 const Youtubepost = require('../models/Youtubepost');
 const Facebookpost = require('../models/Facebookpost');
 
-
-router.post('/:id', (req, res)=>{
+//Get the influencer post data
+router.post('/:id', checkAuth, (req, res)=>{
     var youtubePostData = {};
     console.log(mongoose.Types.ObjectId(req.params.id));
-
     
     Youtubepost.find({creatorid:req.params.id}).sort({viewCount:-1}).collation({locale: "en_US", numericOrdering: true}).limit(3)
     .populate('creatorid',['name','channel_name','category_name','reach','fb_fan_count','yt_subscriber_count','ig_followers_count'])
@@ -70,7 +71,7 @@ router.post('/:id', (req, res)=>{
 
 
 
-router.post('/new/:id', (req, res)=>{
+router.post('/new/:id', checkAuth, (req, res)=>{
     var youtubePostData = {};
     var userData = {};
     Creator.find({_id:req.params.id,reach: {$gt: 1}}).sort({reach:-1}).collation({locale: "en_US", numericOrdering: true})

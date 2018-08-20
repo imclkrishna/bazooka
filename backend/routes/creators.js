@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+const checkAuth = require('../middleware/check-auth');
 // Post model
 const Creator = require('../models/Creator');
 const Category = require('../models/Category');
@@ -16,12 +17,12 @@ router.get('/test/:creatorID', (req, res) => {
 });
 
 
-router.get('/all', (req, res)=>{
+router.get('/all', checkAuth, (req, res)=>{
     res.status(200).json('test page')   
 });
 
 //list of all creators and influencer
-router.post('/all', (req, res)=>{
+router.post('/all', checkAuth, (req, res)=>{
     Creator.find({reach: {$gt: 0}}).sort({reach:-1}).collation({locale: "en_US", numericOrdering: true}).limit(50)
     .populate('cat_id',['wall_cat','wall_cat_code'])
     .exec()
@@ -52,10 +53,10 @@ router.post('/all', (req, res)=>{
 });
 
 //list of influencr
-router.post('/influencer', (req, res)=>{
+router.post('/influencer', checkAuth, (req, res)=>{
     Creator.find({reach: {$gt: 50000}}).sort({reach:-1}).collation({locale: "en_US", numericOrdering: true})
     .populate('cat_id',['wall_cat','wall_cat_code'])
-    .exec()
+     .lean()  .exec()
       .then(creators=> {
          const response = {
             count  : creators.length,
@@ -74,7 +75,7 @@ router.post('/influencer', (req, res)=>{
                     yt_imageUrl:creator.yt_imageUrl,
                     isInf:creator.isInf,
                     status:creator.status                   
-                } 
+                }
             })
         };       
         res.status(200).json(response);
@@ -82,7 +83,7 @@ router.post('/influencer', (req, res)=>{
 });
 
 
-router.get('/list/:youtube?/:facebook?/:insta?', (req, res)=>{
+router.get('/list/:youtube?/:facebook?/:insta?', checkAuth, (req, res)=>{
     const yt = req.params.youtube;
     const fb =  req.params.facebook;
     const insta = req.params.insta;

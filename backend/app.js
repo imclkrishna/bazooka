@@ -10,6 +10,7 @@ const creators   = require('./routes/creators');
 const category   = require('./routes/category');
 const states     = require('./routes/states');
 const influencer = require('./routes/influencer');
+const users      = require('./routes/users');
 
 
 //body parser
@@ -29,5 +30,7 @@ app.use('/creators', creators);
 app.use('/category', category);
 app.use('/states', states);
 app.use('/influencer',influencer);
+app.use('/users', users);
+
 app.get('/', (req, res) => res.send('Hello World!'));
 app.listen(7000, () => console.log('Example app listening on port 7000!'));
